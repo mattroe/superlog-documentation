@@ -93,13 +93,13 @@ For clients without OAuth, create an API key under **Settings → API keys** and
 | Synthetics | `list_synthetic_checks`, `get_synthetic_check`, `create_synthetic_check`, `update_synthetic_check`, `delete_synthetic_check`, `watch_synthetic_check` |
 | Terraform | `export_terraform` |
 
-Each tool takes the same fields as its API endpoint. Read-only tools are marked as read-only. `update_automation`, `cancel_automation_run`, `update_tag_mode`, `revoke_api_key`, and `delete_model_credential` are marked as destructive, so clients can ask before running them.
+Each tool except the `watch_` tools takes the same fields as its API endpoint. Read-only tools are marked as read-only. `update_automation`, `cancel_automation_run`, `update_tag_mode`, `revoke_api_key`, and `delete_model_credential` are marked as destructive, so clients can ask before running them.
 
 `start_integration_connection` returns a consent link for the person to open in their browser. Integrations that need a credential return a secure setup link instead, so the credential is entered in Superlog and not in the conversation.
 
 The telemetry, error, dashboard, alert, synthetic, and Terraform tools need telemetry, which is in early access. `create_ingest_key` returns the new key once, with the OpenTelemetry settings for it. `get_error_notifications` and `update_error_notifications` are for workspace owners and admins.
 
-The `watch_` tools tell the conversation that called them when something happens, so the agent doesn't have to query again. They are MCP only and have no API endpoint. Superlog delivers these notifications through [Wakeshift](https://wakeshift.ai).
+The `watch_` tools tell the conversation that called them when something happens, so the agent doesn't have to keep checking. They are MCP only and have no API endpoint. Superlog delivers these notifications through [Wakeshift](https://wakeshift.ai).
 
 - `watch_alert` reports each time the alert, or one of its groups, starts firing or recovers.
 - `watch_synthetic_check` reports each time the check starts failing or recovers.
@@ -110,7 +110,7 @@ Set `once` on the first three to stop after the first change. `watch_logs` needs
 
 `list_subscriptions` lists the conversation's watches, and `unsubscribe_events` ends one. Wakeshift adds both tools. Ending a log watch frees its slot within a few minutes.
 
-If the client can't be told, the tool returns an error. The agent can check with the other tools instead.
+If the client can't be told, the tool's result says so. The agent can check with the other tools instead.
 
 Adding a workspace secret or a model API key is not available as a tool, so those values never pass through a model. Use the app or the [API](/api-reference/introduction) for them.
 
